@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Sistem Pengaduan PMI</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    margin:0;
+    background:#f4f6f9;
+}
+
+/* LOGIN */
+
+#loginPage {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:#2c3e50;
+}
+
+.login-box {
+    background:white;
+    padding:35px;
+    border-radius:12px;
+    width:320px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.2);
+    text-align:center;
+}
+
+.login-box input {
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border:1px solid #ccc;
+    border-radius:6px;
+}
+
+.password-box {
+    position:relative;
+}
+
+.show-pass {
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+}
+
+.login-box button {
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.login-box button:first-of-type {
+    background:#e60000;
+    color:white;
+}
+
+.user-btn {
+    background:#ecf0f1;
+}
+
+/* DASHBOARD */
+
+#dashboardPage {display:none;}
+
+.sidebar {
+    width:200px;
+    height:100vh;
+    background:#2c3e50;
+    color:white;
+    position:fixed;
+}
+
+.sidebar h2 {
+    text-align:center;
+    padding:20px;
+}
+
+.sidebar a {
+    display:block;
+    color:white;
+    padding:10px;
+    text-decoration:none;
+}
+
+.sidebar a:hover {
+    background:#34495e;
+}
+
+.main {
+    margin-left:200px;
+    padding:20px;
+}
+
+.card {
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:10px;
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+}
+
+td,th {
+    padding:10px;
+    border-bottom:1px solid #ddd;
+    text-align:center;
+}
+
+.hapus {
+    background:red;
+    color:white;
+    border:none;
+    padding:5px 10px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+/* FORM */
+
+#formPage {display:none;}
+
+.modern-form {
+    width:500px;
+    margin:40px auto;
+    background:#fff;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.title {
+    text-align:center;
+    color:#e60000;
+    margin-bottom:15px;
+}
+
+.modern-form input,
+.modern-form select,
+.modern-form textarea {
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+    border:1px solid #ddd;
+    border-radius:4px;
+}
+
+.modern-form textarea {
+    height:90px;
+}
+
+.modern-form button {
+    width:100%;
+    background:#e60000;
+    color:white;
+    border:none;
+    padding:10px;
+    margin-top:10px;
+    cursor:pointer;
+    border-radius:4px;
+}
+
+/* HEADER */
+
+.header-banner {
+    background:#2d5be3;
+    color:white;
+    padding:25px;
+    text-align:center;
+    border-radius:10px;
+    margin:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+
+.header-banner h1 {
+    margin:0;
+    font-size:28px;
+}
+
+.header-banner p {
+    margin:5px 0 0;
+    font-size:16px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginPage">
+
+<div class="login-box">
+
+<h2>Login Admin</h2>
+
+<input type="text" id="username" placeholder="Username">
+
+<div class="password-box">
+
+<input type="password" id="password" placeholder="Password">
+
+<span class="show-pass" onclick="togglePassword()">👁️</span>
+
+</div>
+
+<button onclick="login()">Login</button>
+
+<button class="user-btn" onclick="showForm()">
+Masuk sebagai User
+</button>
+
+</div>
+
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="dashboardPage">
+
+<div class="sidebar">
+
+<h2>Admin</h2>
+
+<a href="#" onclick="showDashboard()">Dashboard</a>
+
+<a href="#" onclick="showForm()">Form Pengaduan</a>
+
+<a href="#" onclick="logout()">Logout</a>
+
+</div>
+
+<div class="main">
+
+<h1>Dashboard Admin</h1>
+
+<div class="card">
+
+<h3>
+Total Pengaduan:
+<span id="total"></span>
+</h3>
+
+</div>
+
+<div class="card">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Tiket</th>
+<th>Nama</th>
+<th>Email</th>
+<th>Negara</th>
+<th>Masalah</th>
+<th>Bukti</th>
+<th>Status</th>
+<th>Aksi</th>
+</tr>
+
+</thead>
+
+<tbody id="data"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- FORM USER -->
+
+<div id="formPage">
+
+<div class="header-banner">
+    <h1>Selamat Datang di Website Resmi</h1>
+    <p>Dinas Tenaga Kerja dan Mobilitas Penduduk Aceh - Layanan Pengaduan Pekerja Migran Indonesia</p>
+</div>
+
+<div class="modern-form">
+
+<h2 class="title">
+Form Pengaduan PMI
+</h2>
+
+<input id="nama" placeholder="Nama Lengkap">
+
+<input id="nik" placeholder="NIK">
+
+<input id="negara" placeholder="Negara Penempatan">
+
+<input id="agen" placeholder="Nama Agen / PPTKIS">
+
+<input id="email" placeholder="Email (Gmail)">
+
+<select id="masalah" onchange="cekMasalah()">
+
+<option value="">Jenis Masalah</option>
+<option>Gaji Tidak Dibayar</option>
+<option>Kekerasan</option>
+<option>Pelanggaran Kontrak</option>
+<option>Lainnya</option>
+
+</select>
+
+<input 
+type="text"
+id="masalahLain"
+placeholder="Tuliskan masalah lainnya"
+style="display:none;">
+
+<textarea id="uraian"
+placeholder="Uraian Pengaduan"></textarea>
+
+<label>
+Upload Bukti (PDF / JPG / PNG)
+</label>
+
+<input type="file" id="bukti">
+
+<button onclick="kirim()">
+Kirim Pengaduan
+</button>
+
+</div>
+
+<!-- CEK STATUS -->
+
+<div class="modern-form">
+
+<h2 class="title">
+Cek Status Pengaduan
+</h2>
+
+<input id="cekTiket"
+placeholder="Masukkan Nomor Tiket">
+
+<button onclick="cekStatus()">
+Cek Status
+</button>
+
+<p id="hasilStatus"
+style="margin-top:10px;font-weight:bold;"></p>
+
+</div>
+
+<!-- GOOGLE MAPS -->
+
+<div class="modern-form">
+
+<h2 class="title">
+Lokasi Layanan PMI
+</h2>
+
+<p style="text-align:center;">
+Dinas Tenaga Kerja dan Mobilitas Penduduk Aceh
+</p>
+
+<iframe
+src="https://www.google.com/maps?q=Dinas+Tenaga+Kerja+dan+Mobilitas+Penduduk+Aceh&output=embed"
+width="100%"
+height="300"
+style="border:0;border-radius:8px;"
+loading="lazy">
+</iframe>
+
+<br><br>
+
+<a href="https://maps.google.com/?q=Dinas+Tenaga+Kerja+dan+Mobilitas+Penduduk+Aceh"
+target="_blank">
+
+<button style="
+background:#2563eb;
+color:white;
+padding:10px;
+border:none;
+border-radius:6px;">
+
+📍 Buka di Google Maps
+
+</button>
+
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+function togglePassword(){
+let pass = document.getElementById("password");
+
+if(pass.type==="password"){
+pass.type="text";
+}else{
+pass.type="password";
+}
+}
+
+function cekMasalah(){
+
+let pilihan = document.getElementById("masalah").value;
+let inputLain = document.getElementById("masalahLain");
+
+if(pilihan=="Lainnya"){
+inputLain.style.display="block";
+}else{
+inputLain.style.display="none";
+}
+}
+
+function showDashboard(){
+loginPage.style.display="none";
+dashboardPage.style.display="block";
+formPage.style.display="none";
+loadData();
+}
+
+function showForm(){
+loginPage.style.display="none";
+dashboardPage.style.display="none";
+formPage.style.display="block";
+}
+
+function login(){
+
+if(username.value=="admin" && password.value=="123"){
+showDashboard();
+}else{
+alert("Login gagal!");
+}
+}
+
+function logout(){
+location.reload();
+}
+
+function kirim(){
+
+let fileInput = document.getElementById("bukti").files[0];
+
+if(!fileInput){
+alert("Upload bukti dulu!");
+return;
+}
+
+let reader = new FileReader();
+
+reader.onload=function(){
+
+let semua = JSON.parse(localStorage.getItem("pengaduan")) || [];
+
+let tiket = "PMI" + Date.now();
+
+let jenisMasalah = document.getElementById("masalah").value;
+
+if(jenisMasalah=="Lainnya"){
+jenisMasalah = document.getElementById("masalahLain").value;
+}
+
+let data={
+
+tiket:tiket,
+nama:nama.value,
+email:email.value,
+negara:negara.value,
+masalah:jenisMasalah,
+status:"baru",
+bukti:reader.result
+
+};
+
+semua.push(data);
+
+localStorage.setItem("pengaduan", JSON.stringify(semua));
+
+alert("Pengaduan berhasil!\nNomor Tiket:\n"+tiket);
+
+};
+
+reader.readAsDataURL(fileInput);
+
+}
+
+function cekStatus(){
+
+let tiket = document.getElementById("cekTiket").value;
+
+let data = JSON.parse(localStorage.getItem("pengaduan")) || [];
+
+let ditemukan = data.find(d=>d.tiket==tiket);
+
+if(ditemukan){
+
+hasilStatus.innerText = "Status: " + ditemukan.status;
+
+}else{
+
+hasilStatus.innerText = "Nomor tiket tidak ditemukan";
+
+}
+}
+
+function loadData(){
+
+let data = JSON.parse(localStorage.getItem("pengaduan")) || [];
+
+total.innerText=data.length;
+
+let tabel="";
+
+data.forEach((d,i)=>{
+
+tabel+=`
+
+<tr>
+
+<td>${d.tiket}</td>
+
+<td>${d.nama}</td>
+
+<td>${d.email}</td>
+
+<td>${d.negara}</td>
+
+<td>${d.masalah}</td>
+
+<td>
+<a href="${d.bukti}" target="_blank">
+Lihat File
+</a>
+</td>
+
+<td>
+
+<select onchange="ubah(${i},this.value)">
+
+<option ${d.status=="baru"?"selected":""}>
+baru
+</option>
+
+<option ${d.status=="proses"?"selected":""}>
+proses
+</option>
+
+<option ${d.status=="selesai"?"selected":""}>
+selesai
+</option>
+
+</select>
+
+</td>
+
+<td>
+<button class="hapus"
+onclick="hapus(${i})">
+Hapus
+</button>
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById("data").innerHTML=tabel;
+
+}
+
+function ubah(i,status){
+
+let data = JSON.parse(localStorage.getItem("pengaduan"));
+
+data[i].status=status;
+
+localStorage.setItem("pengaduan", JSON.stringify(data));
+
+loadData();
+
+}
+
+function hapus(i){
+
+if(confirm("Hapus data?")){
+
+let data = JSON.parse(localStorage.getItem("pengaduan"));
+
+data.splice(i,1);
+
+localStorage.setItem("pengaduan", JSON.stringify(data));
+
+loadData();
+
+}
+}
+
+</script>
+
+</body>
+</html>
